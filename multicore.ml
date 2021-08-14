@@ -36,11 +36,16 @@ let listFromOpts lst =
     | None -> acc
   in
   List.fold_right f lst []       
-  
+
+let (<|) f a = f a
+
 let () =
   let lines = getLines in
   let cmds = List.map fetchPid lines
              |> listFromOpts
              |> List.mapi buildTaskSetCmd
   in
-  List.iter print_string cmds
+  List.iter (fun cmd ->
+      print_string <| "executing cmd:\n" ^ cmd ^ "\n";
+      Sys.command cmd |>
+        print_int)  cmds
