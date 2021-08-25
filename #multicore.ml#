@@ -47,7 +47,7 @@ let getLines processName =
 
 let buildTaskSetCmd cpuIndex pid =
   let pidStr = string_of_int pid in
-  let cpuStr = string_of_int (cpuIndex + 2) in
+  let cpuStr = string_of_int (cpuIndex + 1) in
   String.concat " " ["taskset -p -a --cpu-list";cpuStr;" ";pidStr;"\n"]
 
   (*
