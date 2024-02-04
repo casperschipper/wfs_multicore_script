@@ -47,8 +47,8 @@ let getLines processName =
 
 let buildTaskSetCmd cpuIndex pid =
   let pidStr = string_of_int pid in
-  let cpuStr = string_of_int (cpuIndex + 2) in
-  String.concat " " ["taskset -p -a --cpu-list";cpuStr;" ";pidStr;"\n"]
+  let cpuStr = string_of_int (cpuIndex * 2) in (* Skipping even CPU numbers seems to work better on AMD Ryzen 5900x 12 core *)
+  String.concat " " ["taskset -p -a -c ";cpuStr;" ";pidStr;"\n"]
 
   (*
 let listFromOpts lst =
@@ -62,10 +62,15 @@ let listFromOpts lst =
 
 let (<|) f a = f a
 
+let print_pid pid = 
+  print_string <| "pid of " ^ string_of_int pid;
+  flush stdout
+
 let () =
-  let pids = getPids "[s]upernova" @ getPids "[j]ackd" @ getPids "[s]clang" in
+  let pids = getPids "[s]csynth" @ getPids "[s]upernova" @ getPids "[j]ackd" @ getPids "[s]clang" in
   let n = List.length pids in
-  if n > 12 then
+  let () = List.iter print_pid pids in
+  if n > 24 then
     print_string <| "you have more processes, (number = " ^ string_of_int n ^ " - than cores, try reduce the number of servers in WFS preferences?"
   else
     let cmds =
